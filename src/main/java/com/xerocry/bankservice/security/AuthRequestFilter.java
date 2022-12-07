@@ -1,7 +1,7 @@
 package com.xerocry.bankservice.security;
 
 import com.xerocry.bankservice.service.JwtUserDetailsService;
-import com.xerocry.bankservice.util.JwtTokenUtil;
+import com.xerocry.bankservice.security.jwt.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

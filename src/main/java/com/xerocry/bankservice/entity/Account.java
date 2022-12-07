@@ -1,6 +1,8 @@
 package com.xerocry.bankservice.entity;
 
 import javax.persistence.*;
+
+import com.xerocry.bankservice.dto.AuthMethod;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,4 +37,9 @@ public class Account implements Serializable {
     private double balance;
     private int remainingAttempts = 3;
     private String pin;
+    private AuthMethod authMethod;
+
+    public Boolean isLocked(){
+        return remainingAttempts == 0;
+    }
 }

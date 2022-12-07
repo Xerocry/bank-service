@@ -31,14 +31,15 @@ public class WebSecurityConfig{
     private JwtUserDetailsService userDetailsService;
     @Autowired
     private AuthRequestFilter authRequestFilter;
-    private static final String[] AUTH_WHITELIST = {
+
+/*    private static final String[] AUTH_WHITELIST = {
             "/swagger-ui/**",
             "/v3/api-docs",
             "/swagger-resources",
             "/swagger-resources/**",
             "/swagger-ui.html",
             "/webjars/**"
-    };
+    };*/
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -76,10 +77,10 @@ public class WebSecurityConfig{
         return http.build();
     }
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring().antMatchers(AUTH_WHITELIST);
-//    }
+/*    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().antMatchers(AUTH_WHITELIST);
+    }*/
 
     @Bean
     CorsConfigurationSource corsConfigurer() {

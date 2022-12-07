@@ -1,5 +1,6 @@
 package com.xerocry.bankservice.service;
 
+import com.xerocry.bankservice.dto.AuthMethod;
 import com.xerocry.bankservice.entity.Account;
 import com.xerocry.bankservice.repository.AccountRepo;
 import com.xerocry.bankservice.repository.UserRepo;
@@ -19,6 +20,8 @@ import java.util.Collections;
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
     private AccountRepo accountRepo;
+    @Autowired
+    private UserRepo userRepo;
     @Override
     public UserDetails loadUserByUsername(String cardNumber) throws UsernameNotFoundException {
         Account account = accountRepo.findAccountByCardNumber(cardNumber);
@@ -26,6 +29,8 @@ public class JwtUserDetailsService implements UserDetailsService {
             log.debug("Card '" + cardNumber + "' not found");
             throw new UsernameNotFoundException("Card number " + cardNumber + " not found");
         }
-        return new User(cardNumber, account.getPin(), Collections.emptyList());
+        if (account.getAuthMethod().equals(AuthMethod.PIN)) {
+            return new User(cardNumber, account.getPin(), Collections.emptyList());
+        } else return new User(cardNumber, userRepo.findUserById(account.getId()).getFingerprint(), Collections.emptyList());
     }
 }

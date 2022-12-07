@@ -1,24 +1,22 @@
 package com.xerocry.bankservice.controller;
 
-import com.xerocry.bankservice.dto.AuthenticationRequest;
-import com.xerocry.bankservice.dto.AuthenticationResponse;
-import com.xerocry.bankservice.dto.TransactionRequest;
-import com.xerocry.bankservice.dto.TransactionResponse;
+import com.xerocry.bankservice.dto.*;
 import com.xerocry.bankservice.entity.Account;
+import com.xerocry.bankservice.entity.User;
 import com.xerocry.bankservice.repository.AccountRepo;
-import com.xerocry.bankservice.repository.TransactionRepo;
+import com.xerocry.bankservice.repository.UserRepo;
 import com.xerocry.bankservice.service.AccountService;
 import com.xerocry.bankservice.service.JwtUserDetailsService;
 import com.xerocry.bankservice.service.TransactionService;
-import com.xerocry.bankservice.util.JwtTokenUtil;
+import com.xerocry.bankservice.security.jwt.JwtTokenUtil;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,17 +25,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@OpenAPIDefinition(servers = { @Server(url = "http://localhost:8100") }, info = @Info(title = "Bank Service API", version = "v1", description = "Part of ATM Emulator microservice architecture, handling transactions"))
+@OpenAPIDefinition(servers = {@Server(url = "http://localhost:8100")}, info = @Info(title = "Bank Service API", version = "v1", description = "Part of ATM Emulator microservice architecture, handling transactions"))
 @RequestMapping(path = "/api/v1/transactions")
 @Slf4j
 public class TransactionController {
-
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
-    @Autowired
-    private JwtUserDetailsService userDetailsService;
     @Autowired
     private AccountRepo accountRepo;
     @Autowired
@@ -45,30 +40,39 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authRequest){
-        Account account = accountService.loadAccountByName(authRequest.getCardNumber());
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authRequest) {
+        try {
+            Account account = accountService.loadAccountByName(authRequest.getCardNumber());
 
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(authRequest.getCardNumber());
-
-        if (account.getRemainingAttempts() > 0) {
-            try {
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(authRequest.getCardNumber(), authRequest.getPassword())
-                );
-                account.setRemainingAttempts(3);
-            } catch (BadCredentialsException exception) {
-                account.setRemainingAttempts(account.getRemainingAttempts() - 1);
-                accountRepo.save(account);
-                throw new BadCredentialsException("Wrong authentication parameter. You have " + account.getRemainingAttempts() + " more tries left.");
+            if (account == null) {
+                return ResponseEntity.badRequest().body("Card not exist.");
             }
 
-            final String token = jwtTokenUtil.generateToken(userDetails);
+            if (account.getRemainingAttempts() > 0) {
+                try {
+                    authenticationManager.authenticate(
+                            new UsernamePasswordAuthenticationToken(authRequest.getCardNumber(), authRequest.getPassword())
+                    );
+                    account.setRemainingAttempts(3);
+                } catch (BadCredentialsException exception) {
+                    account.setRemainingAttempts(account.getRemainingAttempts() - 1);
+                    accountRepo.save(account);
+//                    if(account.getAuthMethod().equals())
+                    throw new BadCredentialsException("Wrong authentication parameter. You have "
+                            + account.getRemainingAttempts()
+                            + " more tries left.");
+                }
 
-            return ResponseEntity.ok(new AuthenticationResponse(token));
-        } else {
-            return ResponseEntity.badRequest().body("Card Blocked");
+                final String token = jwtTokenUtil.generateToken(account);
+
+                return ResponseEntity.ok(new AuthenticationResponse(token));
+            } else {
+                return ResponseEntity.badRequest().body("Card Blocked");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Authentication error: " + e.getMessage());
         }
     }
 
@@ -90,4 +94,10 @@ public class TransactionController {
         return this.transactionService.checkBalance(cardNumber);
     }
 
+    @PostMapping("/changeauth/{cardNumber}/{method}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> changeAuth(@NotNull @PathVariable("cardNumber") String cardNumber,
+                                                          @NotNull @PathVariable("method") Boolean method) throws Exception {
+        return this.transactionService.changeAuthMethod(cardNumber, method);
+    }
 }

@@ -1,16 +1,16 @@
 package com.xerocry.bankservice.service;
 
-import com.xerocry.bankservice.dto.TransactionStatus;
-import com.xerocry.bankservice.dto.TransactionRequest;
-import com.xerocry.bankservice.dto.TransactionResponse;
-import com.xerocry.bankservice.dto.TransactionType;
+import com.xerocry.bankservice.dto.*;
 import com.xerocry.bankservice.entity.Account;
 import com.xerocry.bankservice.entity.Transaction;
+import com.xerocry.bankservice.entity.User;
 import com.xerocry.bankservice.repository.AccountRepo;
 import com.xerocry.bankservice.repository.TransactionRepo;
+import com.xerocry.bankservice.repository.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,7 +81,7 @@ public class TransactionService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<TransactionResponse> checkBalance(@PathVariable @NotNull String cardNumber) {
+    public ResponseEntity<TransactionResponse> checkBalance(@NotNull String cardNumber) {
         Account account = this.accountRepo.findAccountByCardNumber(cardNumber);
 
         TransactionResponse response = new TransactionResponse();
@@ -94,4 +94,17 @@ public class TransactionService {
     }
 
 
+    public ResponseEntity<?> changeAuthMethod(@NotNull String cardNumber, @NotNull Boolean method) {
+        Account account = accountRepo.findAccountByCardNumber(cardNumber);
+
+        if (account == null) {
+            log.error("No card found!");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        account.setAuthMethod(method ? AuthMethod.FINGERPRINT : AuthMethod.PIN);
+        this.accountRepo.save(account);
+
+        return ResponseEntity.ok("Auth method changed!");
+    }
 }

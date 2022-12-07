@@ -25,5 +25,4 @@ public class Terminal implements Serializable {
 
     @Column(name = "available_cash", nullable = false)
     private double availableCash;
-
 }

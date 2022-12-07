@@ -16,6 +16,7 @@ spring:
 
 server:
   port: ${port:8100}
+
 logging:
   level:
     org:
