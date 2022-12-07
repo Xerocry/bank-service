@@ -25,7 +25,7 @@ public class TransactionService {
     @Autowired
     private AccountRepo accountRepo;
 
-    public ResponseEntity<TransactionResponse> deposit(String token, TransactionRequest transactionRequest) {
+    public ResponseEntity<TransactionResponse> deposit(TransactionRequest transactionRequest) {
         String cardNumber = transactionRequest.getCardNumber();
         Account account = accountRepo.findAccountByCardNumber(cardNumber);
         account.setBalance(account.getBalance() + transactionRequest.getAmount());
@@ -49,7 +49,7 @@ public class TransactionService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<TransactionResponse> withdraw(String token, TransactionRequest transactionRequest) {
+    public ResponseEntity<TransactionResponse> withdraw(TransactionRequest transactionRequest) {
         TransactionStatus STATUS;
         String cardNumber = transactionRequest.getCardNumber();
         Account account = accountRepo.findAccountByCardNumber(cardNumber);
@@ -81,7 +81,7 @@ public class TransactionService {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<TransactionResponse> checkBalance(String token, @PathVariable @NotNull String cardNumber) {
+    public ResponseEntity<TransactionResponse> checkBalance(@PathVariable @NotNull String cardNumber) {
         Account account = this.accountRepo.findAccountByCardNumber(cardNumber);
 
         TransactionResponse response = new TransactionResponse();

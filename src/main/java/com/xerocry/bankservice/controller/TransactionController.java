@@ -11,6 +11,11 @@ import com.xerocry.bankservice.service.AccountService;
 import com.xerocry.bankservice.service.JwtUserDetailsService;
 import com.xerocry.bankservice.service.TransactionService;
 import com.xerocry.bankservice.util.JwtTokenUtil;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@OpenAPIDefinition(servers = { @Server(url = "http://localhost:8100") }, info = @Info(title = "Bank Service API", version = "v1", description = "Part of ATM Emulator microservice architecture, handling transactions"))
 @RequestMapping(path = "/api/v1/transactions")
 @Slf4j
 public class TransactionController {
@@ -67,21 +73,21 @@ public class TransactionController {
     }
 
     @PostMapping(value = "/withdraw")
-    public ResponseEntity<TransactionResponse> withdraw(@RequestHeader("Authorization") String token,
-                                                        @RequestBody TransactionRequest transactionRequest) throws Exception {
-        return this.transactionService.withdraw(token, transactionRequest);
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<TransactionResponse> withdraw(@RequestBody TransactionRequest transactionRequest) throws Exception {
+        return this.transactionService.withdraw(transactionRequest);
     }
 
     @PostMapping(value = "/deposit")
-    public ResponseEntity<TransactionResponse> deposit(@RequestHeader("Authorization") String token,
-                                                       @RequestBody TransactionRequest transactionRequest) throws Exception {
-        return this.transactionService.deposit(token, transactionRequest);
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<TransactionResponse> deposit(@RequestBody TransactionRequest transactionRequest) throws Exception {
+        return this.transactionService.deposit(transactionRequest);
     }
 
     @GetMapping("/balance/{cardNumber}")
-    public ResponseEntity<TransactionResponse> balance(@RequestHeader("Authorization") String token,
-                                                       @NotNull @PathVariable String cardNumber) throws Exception {
-        return this.transactionService.checkBalance(token, cardNumber);
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<TransactionResponse> balance(@NotNull @PathVariable String cardNumber) throws Exception {
+        return this.transactionService.checkBalance(cardNumber);
     }
 
 }

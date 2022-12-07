@@ -10,6 +10,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
 
 server:
   port: ${port:8100}
@@ -25,4 +28,7 @@ logging:
 jwt:
   secret: atmcode
 
-#  /api/v1/transactions/authenticate"
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+#Swagger Api http://localhost:8100/swagger-ui.html
