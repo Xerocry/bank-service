@@ -19,8 +19,6 @@ import java.util.Collections;
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
     private AccountRepo accountRepo;
-    @Autowired
-    private UserRepo userRepo;
     @Override
     public UserDetails loadUserByUsername(String cardNumber) throws UsernameNotFoundException {
         Account account = accountRepo.findAccountByCardNumber(cardNumber);
@@ -28,6 +26,6 @@ public class JwtUserDetailsService implements UserDetailsService {
             log.debug("Card '" + cardNumber + "' not found");
             throw new UsernameNotFoundException("Card number " + cardNumber + " not found");
         }
-        return account;
+        return new User(cardNumber, account.getPin(), Collections.emptyList());
     }
 }

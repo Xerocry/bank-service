@@ -35,30 +35,28 @@ public class TransactionController {
     @Autowired
     private AccountRepo accountRepo;
     @Autowired
-    private TransactionRepo transactionRepo;
-    @Autowired
     private AccountService accountService;
     @Autowired
     private TransactionService transactionService;
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authRequest) throws Exception {
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authRequest){
+        Account account = accountService.loadAccountByName(authRequest.getCardNumber());
 
-        Account account = this.accountRepo.findAccountByCardNumber(authRequest.getCardNumber());
-        Account account1 = new Account();
+        final UserDetails userDetails = userDetailsService
+                .loadUserByUsername(authRequest.getCardNumber());
 
         if (account.getRemainingAttempts() > 0) {
             try {
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(authRequest.getCardNumber(), authRequest.getPassword())
                 );
-                account1.setRemainingAttempts(3);
+                account.setRemainingAttempts(3);
             } catch (BadCredentialsException exception) {
-                account1.setRemainingAttempts(account.getRemainingAttempts() - 1);
-                throw new Exception("Incorrect credentials", exception);
+                account.setRemainingAttempts(account.getRemainingAttempts() - 1);
+                accountRepo.save(account);
+                throw new BadCredentialsException("Wrong authentication parameter. You have " + account.getRemainingAttempts() + " more tries left.");
             }
-            final UserDetails userDetails = userDetailsService
-                    .loadUserByUsername(authRequest.getCardNumber());
 
             final String token = jwtTokenUtil.generateToken(userDetails);
 

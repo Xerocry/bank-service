@@ -1,4 +1,4 @@
-package com.xerocry.bankservice.entity;
+package com.xerocry.bankservice.aspect;
 
 import java.util.Date;
 
