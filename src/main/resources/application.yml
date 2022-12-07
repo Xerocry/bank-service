@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: xerocry-bank-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/atmData
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: ${port:8100}
+logging:
+  level:
+    org:
+      springframework:
+        web: INFO
+      hibernate: ERROR
+    net:
+      guides: DEBUG
+
+jwt:
+  secret: atmcode
+
+#  /api/v1/transactions/authenticate"
