@@ -107,4 +107,14 @@ public class TransactionService {
 
         return ResponseEntity.ok("Auth method changed!");
     }
+
+    public ResponseEntity<Account> validateCard(String cardNumber) {
+        Account account = accountRepo.findAccountByCardNumber(cardNumber);
+
+        if (account == null) {
+            log.error("No card found!");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(account);
+    }
 }

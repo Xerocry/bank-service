@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @OpenAPIDefinition(servers = {@Server(url = "http://localhost:8100")}, info = @Info(title = "Bank Service API", version = "v1", description = "Part of ATM Emulator microservice architecture, handling transactions"))
-@RequestMapping(path = "/api/v1/transactions")
+@RequestMapping(path = "/api/v1")
 @Slf4j
 public class TransactionController {
     @Autowired
@@ -76,28 +76,33 @@ public class TransactionController {
         }
     }
 
-    @PostMapping(value = "/withdraw")
+    @PostMapping(value = "/transactions/withdraw")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<TransactionResponse> withdraw(@RequestBody TransactionRequest transactionRequest) throws Exception {
         return this.transactionService.withdraw(transactionRequest);
     }
 
-    @PostMapping(value = "/deposit")
+    @PostMapping(value = "/transactions/deposit")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<TransactionResponse> deposit(@RequestBody TransactionRequest transactionRequest) throws Exception {
         return this.transactionService.deposit(transactionRequest);
     }
 
-    @GetMapping("/balance/{cardNumber}")
+    @GetMapping("/transactions/balance/{cardNumber}")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<TransactionResponse> balance(@NotNull @PathVariable String cardNumber) throws Exception {
         return this.transactionService.checkBalance(cardNumber);
     }
 
-    @PostMapping("/changeauth/{cardNumber}/{method}")
+    @PostMapping("/account/changeauth/{cardNumber}/{method}")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> changeAuth(@NotNull @PathVariable("cardNumber") String cardNumber,
                                                           @NotNull @PathVariable("method") Boolean method) throws Exception {
         return this.transactionService.changeAuthMethod(cardNumber, method);
+    }
+
+    @GetMapping("/account/validateCard/{cardNumber}")
+    public ResponseEntity<Account> validateCard(@NotNull @PathVariable String cardNumber) {
+        return this.transactionService.validateCard(cardNumber);
     }
 }

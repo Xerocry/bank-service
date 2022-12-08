@@ -60,7 +60,9 @@ public class WebSecurityConfig{
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/transactions/authenticate").permitAll()
+                .antMatchers("/api/v1/authenticate").permitAll()
+                .antMatchers("/api/v1/account/validateCard").permitAll()
+                .antMatchers("/api/v1/account/validateCard/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/v3/api-docs/**").permitAll()
                 .antMatchers("/swagger-resources").permitAll()
