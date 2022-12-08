@@ -22,7 +22,7 @@ public class Transaction implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transactions_generator")
     @SequenceGenerator(name = "transactions_generator", sequenceName = "transactions_seq", allocationSize = 1)
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
     private double transactionAmount;

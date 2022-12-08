@@ -14,9 +14,14 @@ All of that was developed, containerized and were covered with some tests.
 ## Technologies
 * Java
 * Maven
-* Springboot 2.7
 * Docker
 * Git
+* PostgreSQL
+* **Libraries**
+  * Springboot 2.7
+  * Swagger
+  * Resilience4j
+  * lombok
 
 ## How to run solved problems
 There are two options:
@@ -34,35 +39,18 @@ There are two options:
 2. Go to the root directory of the particular service.
 3. Run `mvn spring-boot:run` to get the service running.
 
+### Documentation
+After running the app the best entry point is Swagger and the url are
+
+* http://localhost:8100/swagger-ui/index.html - bank-service
+* http://localhost:8300/swagger-ui/index.html - atm-service
+
 ## Problems design notes
 JWT Authentication method was chosen because it's easier to implement rather than OAuth and others.
 
 Not all corner-cases are covered with proper HTTP response and exceptions due to lack of time.
 
 I implemented enough functionality to solve given problem. There are many functionality that can be added in the future.
-
-#### Tests run:
-
-```
-*******************************
-Map Solver
--------------------------------
-TestMapWithMinWidthAndHeight
-Test 1 passed!
-Test2x2Map
-Test 2 passed!
-Test3x3MapForOverlapCase
-Test 3 passed!
-TestMapDifferentSizes
-Test 4 passed!
-TestMapSolverRandom
-Test 5 passed!
-TestMapSolverTime
-There are 100 pieces and map of 30x30
-Elapsed time = 4.388 ms (CPU time)
-Test 6 passed!
-*******************************
-```
 
 ## Author
 Andrey Raskin - goldmask000@gmail.com; telegram/linkedin: @xerocry

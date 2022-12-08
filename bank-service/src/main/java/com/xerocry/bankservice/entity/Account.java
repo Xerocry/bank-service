@@ -22,7 +22,7 @@ public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank;
     @OneToOne(mappedBy = "account")
@@ -38,5 +38,18 @@ public class Account implements Serializable {
 
     public Boolean isLocked(){
         return remainingAttempts == 0;
+    }
+
+    public Account(Account toCopy) {
+        this.id = toCopy.id;
+        this.bank = toCopy.bank;
+        this.user = toCopy.user;
+        this.transactions = toCopy.transactions;
+        this.cardNumber = toCopy.cardNumber;
+        this.expireDate = toCopy.expireDate;
+        this.balance = toCopy.balance;
+        this.remainingAttempts = toCopy.remainingAttempts;
+        this.pin = toCopy.pin;
+        this.authMethod = toCopy.authMethod;
     }
 }

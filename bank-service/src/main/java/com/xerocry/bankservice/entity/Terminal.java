@@ -19,7 +19,7 @@ public class Terminal implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "bank_id", nullable = false)
     private Bank bank;
 

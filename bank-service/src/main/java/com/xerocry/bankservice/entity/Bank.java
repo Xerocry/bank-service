@@ -27,4 +27,9 @@ public class Bank implements Serializable {
     @OneToMany(mappedBy="bank")
     private Set<Terminal> terminals;
 
+    public Bank(String name, String address, String code) {
+        this.name = name;
+        this.address = address;
+        this.code = code;
+    }
 }
