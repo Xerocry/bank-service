@@ -20,4 +20,4 @@ server:
 #    key-alias: springboot
 #    key-password: password
 
-bankServiceUrl: http://localhost:8100/api/v1
+bankServiceUrl: http://bank-service:8100/api/v1

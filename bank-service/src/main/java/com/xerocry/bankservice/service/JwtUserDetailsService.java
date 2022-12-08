@@ -25,11 +25,11 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String cardNumber) throws UsernameNotFoundException {
         Optional<Account> account = accountRepo.findAccountByCardNumber(cardNumber);
-        if (account.isPresent()) {
+        if (!account.isPresent()) {
             log.debug("Card '" + cardNumber + "' not found");
             throw new UsernameNotFoundException("Card number " + cardNumber + " not found");
         }
-        else if (account.get().getAuthMethod().equals(AuthMethod.PIN)) {
+        if (account.get().getAuthMethod().equals(AuthMethod.PIN)) {
             return new User(cardNumber, account.get().getPin(), Collections.emptyList());
         } else
             return new User(cardNumber, userRepo.findUserById(account.get().getId()).getFingerprint(), Collections.emptyList());

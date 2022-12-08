@@ -16,8 +16,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class AtmService {
-    @Value("${bankServiceUrl}")
-    private static String url;
+//    @Value("${bankServiceUrl}")
+    private static String url = "http://bank-service:8100/api/v1";
     private static final String CHECK_BALANCE = "/transactions/balance/";
     private static final String DEPOSIT_TRANSACTION = "/transactions/deposit";
     private static final String WITHDRAW_TRANSACTION = "/transactions/withdraw";
@@ -28,7 +28,6 @@ public class AtmService {
     private RestTemplate restTemplate;
 
     public ResponseEntity<TransactionResponse> withdraw(TransactionRequest transactionRequest){
-        log.info("ATMController::balance");
         return restTemplate.postForEntity(url + WITHDRAW_TRANSACTION, transactionRequest, TransactionResponse.class);
     }
     public ResponseEntity<TransactionResponse> deposit(TransactionRequest transactionRequest){

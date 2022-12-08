@@ -41,5 +41,28 @@ Not all corner-cases are covered with proper HTTP response and exceptions due to
 
 I implemented enough functionality to solve given problem. There are many functionality that can be added in the future.
 
+#### Tests run:
+
+```
+*******************************
+Map Solver
+-------------------------------
+TestMapWithMinWidthAndHeight
+Test 1 passed!
+Test2x2Map
+Test 2 passed!
+Test3x3MapForOverlapCase
+Test 3 passed!
+TestMapDifferentSizes
+Test 4 passed!
+TestMapSolverRandom
+Test 5 passed!
+TestMapSolverTime
+There are 100 pieces and map of 30x30
+Elapsed time = 4.388 ms (CPU time)
+Test 6 passed!
+*******************************
+```
+
 ## Author
 Andrey Raskin - goldmask000@gmail.com; telegram/linkedin: @xerocry

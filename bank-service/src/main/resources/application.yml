@@ -2,7 +2,8 @@ spring:
   application:
     name: xerocry-bank-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/atmData
+#    url: jdbc:postgresql://localhost:5432/atmData
+    url: jdbc:postgresql://pgsql-db:5432/atmData
     username: postgres
     password: postgres
   jpa:
