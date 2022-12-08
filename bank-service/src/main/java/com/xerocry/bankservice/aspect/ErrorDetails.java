@@ -1,7 +1,12 @@
 package com.xerocry.bankservice.aspect;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Date;
 
+@Getter
+@Setter
 public class ErrorDetails {
     private Date timestamp;
     private String message;
@@ -11,17 +16,5 @@ public class ErrorDetails {
         this.timestamp = timestamp;
         this.message = message;
         this.details = details;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getDetails() {
-        return details;
     }
 }

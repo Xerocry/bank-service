@@ -12,7 +12,7 @@ spring:
   application:
     name: xerocry-atm-service
 server:
-  port: ${port:8300}
+  port: 8300
 #  ssl:
 #    key-store: classpath:keystore/springboot.p12
 #    key-store-password: password
@@ -20,4 +20,4 @@ server:
 #    key-alias: springboot
 #    key-password: password
 
-bankServiceUrl: https://localhost:8100/api/v1/
+bankServiceUrl: http://localhost:8100/api/v1

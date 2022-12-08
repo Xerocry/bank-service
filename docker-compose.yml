@@ -1,0 +1,49 @@
+version: '1'
+
+services:
+  bank-service:
+    container_name: bank-service
+    hostname: bank-service
+    build:
+      context: ./bank-service/
+      dockerfile: Dockerfile
+    ports:
+      - 8100:8100
+    expose:
+      - 8100
+  atm-service:
+    container_name: atm-service
+    hostname: atm-service
+    build:
+      context: ./atm-service
+      dockerfile: Dockerfile
+    ports:
+      - 8300:8300
+    expose:
+      - 8300
+    depends_on:
+      - bank-service
+    restart: always
+  pgsql-db:
+      image: postgres:15.1
+      hostname: pgsql-db
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=atmData
+      command: [ "postgres","-c","logging_collector=on", "-c", "log_directory=/var/log/postgresql", "-c", "log_filename=postgresql-%Y-%m-%d_%H%M%S.log","-c","log_line_prefix='%a %u %e '" ]
+      ports:
+        - 5432:5432
+      expose:
+        - 5432
+      volumes:
+        - ./atmData-dump.sql:/docker-entrypoint-initdb.d/atmData-dump.sql
+        - postgres-data:/var/lib/postgresql/data
+        - postgres-data:/var/log/postgresql
+        - postgres-data:/home
+      networks:
+        default:
+          aliases:
+            - pgsql-db
+volumes:
+  postgres-data:

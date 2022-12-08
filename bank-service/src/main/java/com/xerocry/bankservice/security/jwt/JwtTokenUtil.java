@@ -39,27 +39,46 @@ public class JwtTokenUtil implements Serializable {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
-    //for retrieveing any information from token we will need the secret key
+
+    /**
+     * Method for retrieveing any information from token we will need the secret key
+     * @param token
+     * @return
+     */
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
-    //check if the token has expired
+    /**
+     * Check if the token has expired
+     * @param token
+     * @return
+     */
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
-    //generate token for user
+    /**
+     * Generate token for user
+     * @param userDetails
+     * @return
+     */
+
     public String generateToken(Account userDetails) {
         User user = userRepo.findUserById(userDetails.getId());
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userDetails.getCardNumber());
     }
 
-    //while creating the token -
-    //1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-    //2. Sign the JWT using the HS512 algorithm and secret key.
+    /**
+     *  While creating the token -
+     *     1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
+     *     2. Sign the JWT using the HS512 algorithm and secret key.
+     * @param claims
+     * @param subject
+     * @return
+     */
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
@@ -70,7 +89,12 @@ public class JwtTokenUtil implements Serializable {
                 .compact();
     }
 
-    //validate token
+    /**
+     * Validate token
+     * @param token
+     * @param userDetails
+     * @return
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         try {
             final String username = getUsernameFromToken(token);

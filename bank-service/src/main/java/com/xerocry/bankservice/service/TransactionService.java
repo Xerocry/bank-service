@@ -3,19 +3,18 @@ package com.xerocry.bankservice.service;
 import com.xerocry.bankservice.dto.*;
 import com.xerocry.bankservice.entity.Account;
 import com.xerocry.bankservice.entity.Transaction;
-import com.xerocry.bankservice.entity.User;
 import com.xerocry.bankservice.repository.AccountRepo;
 import com.xerocry.bankservice.repository.TransactionRepo;
-import com.xerocry.bankservice.repository.UserRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.webjars.NotFoundException;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -27,7 +26,7 @@ public class TransactionService {
 
     public ResponseEntity<TransactionResponse> deposit(TransactionRequest transactionRequest) {
         String cardNumber = transactionRequest.getCardNumber();
-        Account account = accountRepo.findAccountByCardNumber(cardNumber);
+        Account account = accountRepo.findAccountByCardNumber(cardNumber).get();
         account.setBalance(account.getBalance() + transactionRequest.getAmount());
         log.debug("Successfully deposited!");
 
@@ -52,7 +51,7 @@ public class TransactionService {
     public ResponseEntity<TransactionResponse> withdraw(TransactionRequest transactionRequest) {
         TransactionStatus STATUS;
         String cardNumber = transactionRequest.getCardNumber();
-        Account account = accountRepo.findAccountByCardNumber(cardNumber);
+        Account account = accountRepo.findAccountByCardNumber(cardNumber).get();
 
         if (account.getBalance() > transactionRequest.getAmount()) {
             account.setBalance(account.getBalance() - transactionRequest.getAmount());
@@ -82,7 +81,7 @@ public class TransactionService {
     }
 
     public ResponseEntity<TransactionResponse> checkBalance(@NotNull String cardNumber) {
-        Account account = this.accountRepo.findAccountByCardNumber(cardNumber);
+        Account account = this.accountRepo.findAccountByCardNumber(cardNumber).get();
 
         TransactionResponse response = new TransactionResponse();
         response.setTimestamp(LocalDate.now());
@@ -95,7 +94,7 @@ public class TransactionService {
 
 
     public ResponseEntity<?> changeAuthMethod(@NotNull String cardNumber, @NotNull Boolean method) {
-        Account account = accountRepo.findAccountByCardNumber(cardNumber);
+        Account account = accountRepo.findAccountByCardNumber(cardNumber).get();
 
         if (account == null) {
             log.error("No card found!");
@@ -108,13 +107,22 @@ public class TransactionService {
         return ResponseEntity.ok("Auth method changed!");
     }
 
-    public ResponseEntity<Account> validateCard(String cardNumber) {
-        Account account = accountRepo.findAccountByCardNumber(cardNumber);
-
-        if (account == null) {
-            log.error("No card found!");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public Boolean validateCard(String cardNumber) {
+        try {
+            Optional<Account> account = accountRepo.findAccountByCardNumber(cardNumber);
+            if (account.isPresent()) {
+                return true;
+            } else {
+                throw new NotFoundException("Card " .concat(cardNumber).concat(" not found"));
+            }
+        } catch (NotFoundException e) {
+            log.error("validateCard service not found error");
+            log.error(e.getLocalizedMessage());
+            return false;
+        } catch (Exception e) {
+            log.error("validateCard service error");
+            log.error(e.getLocalizedMessage());
+            return false;
         }
-        return ResponseEntity.ok(account);
     }
 }

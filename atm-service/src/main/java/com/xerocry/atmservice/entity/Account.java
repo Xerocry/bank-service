@@ -13,11 +13,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class Account implements Serializable {
     private String cardNumber;
-    private int remainingAttempts = 3;
+//    private int remainingAttempts = 3;
     private String pin;
-//    private AuthMethod authMethod;
-
+/*
     public Boolean isLocked(){
         return remainingAttempts == 0;
-    }
+    }*/
 }
